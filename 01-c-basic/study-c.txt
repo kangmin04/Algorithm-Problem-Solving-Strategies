@@ -1,0 +1,60 @@
+1. 컴파일 VS 인터프리터 
+    - 인터프리터:  
+        node index.mjs는 인터프리터이기에 가능. 
+        위 command 입력 시: 컴퓨터야, node라는 런타임 프로그램을 실행하고, 그 프로그램의 입력값으로 내가 짠 index.mjs 소스코드 텍스트를 전달해 줘"라는 의미
+        V8 엔진이 실시간으로 텍스트를 읽어가면서 기계어로 번역하고 메모리에 올려 실행함. 
+    - 컴파일: 
+        컴퓨터가 바로 실행할 수 있도록 미리 기계어 덩어리 파일(.exe 또는 맥의 바이너리 파일)로 번역해 두는 컴파일(g++) 과정이 무조건 선행되어야 함! 
+        vs code의 run code 명령어는 사실 ... 
+            # 1단계: 컴파일 (main.cpp를 번역해서 'my_program'이라는 실행 파일을 생성)
+            g++ main.cpp -o my_program
+
+            # 2단계: 실행 (생성된 실행 파일을 직접 구동)
+            ./my_program
+        다음과 같은 과정을 거친다! 
+        물론 node에서 package.json 처럼 cmake 등으로 명령어 정해둔 후 빌드 바로 가능하기도 함. 
+
+
+2. 클래스 생성자 
+    -  C 언어에서 구조체를 함수로 초기화하던 방식 구조
+        void initTree(SimpleLSMTree* tree, size_t maxSize) {
+            tree->maxMemTableSize = maxSize;
+            tree->fileCounter = 0;
+        }
+
+    -  C++ 방식 (이름 뒤에 콜론(:)을 붙여서 초기화)
+        SimpleLSMTree(size_t maxSize) : maxMemTableSize(maxSize), fileCounter(0) {
+            // 중괄호 안에는 추가로 실행할 코드만 적음 (보통 비워둠)
+        }
+
+
+3. 포인터, 참조자 
+    - 기존 c: 
+        void putC(const string* key) {
+            // 내부에서 쓸 때 항상 화살표나 역참조를 해야 함
+            cout << *key; 
+        }
+        // 호출할 때: putC(&myKey); -> 주소를 직접 넘김
+
+    - c++: 포인터를 내부적으로 알아서 처리해 줄 테니, 겉보기에는 일반 변수처럼 편하게 써라" 하고 만든 기능
+        void putCPP(const string& key) {
+            // 포인터 기호(*) 없이 그냥 일반 변수처럼 씀
+            cout << key; 
+        }
+        // 호출할 때: putCPP(myKey); -> 주소 기호(&)를 붙이지 않고 그냥 넘김!
+
+
+4. size_t: 
+    - unsigned integer. 
+    - 배열, 메모리 크기 할당 등 음수가 아닌 수에 대하여 설정 
+
+5. const 
+    - 중괄호 전에 const 선언. 
+    - 이 함수는 내부에 있는 멤버 변수들을 절대 수정하지 않는 안전한 '읽기 전용(Read-Only)' 함수입니다"라고 컴파일러에게 알리는 것. 
+    - const 함수 내에선 멤버변수 수정 불가 (변수.set()불가 )
+    - 예시 코드: 
+           size_t hash1(const string& key) const { 
+                size_t h = 5381;
+                for (char c : key) h = ((h << 5) + h) + c;
+                return h % 1024;
+            }
